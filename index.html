@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>色林错湖区年降水量与湖泊面积变化对比（2000-2024）</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            width: 80%;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+<div class="chart-container">
+    <h1>色林错湖区年降水量与湖泊面积变化对比（2000-2024）</h1>
+    <canvas id="combinedChart"></canvas>
+</div>
+
+<script>
+    const ctx = document.getElementById('combinedChart').getContext('2d');
+
+    // 定义颜色
+    const precipColor = 'rgb(141, 205, 213)';
+    const areaColor = 'rgb(230, 132, 109)';
+
+    const years = ['2000', '2004', '2008', '2012', '2016', '2020', '2024'];
+    const precipitation = [358.535, 356.899, 360.851, 371.436, 379.157, 387.845, 396.733];
+    const area = [1951.29, 2137.09, 2253.11, 2339.36, 2340.91, 2393.35, 2391.55];
+
+    const chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: years,
+            datasets: [
+                // 折线图数据集放在前面，并设置更高的order值
+                {
+                    label: '湖泊面积 (km²)',
+                    type: 'line',
+                    data: area,
+                    backgroundColor: areaColor,
+                    borderColor: areaColor,
+                    borderWidth: 3,
+                    pointBackgroundColor: areaColor,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    yAxisID: 'y1',
+                    order: 1  // 设置更高的order值使其显示在上层
+                },
+                // 柱状图数据集放在后面，并设置更低的order值
+                {
+                    label: '年降水量 (mm)',
+                    type: 'bar',
+                    data: precipitation,
+                    backgroundColor: precipColor,
+                    borderColor: precipColor,
+                    borderWidth: 1,
+                    yAxisID: 'y',
+                    order: 2  // 设置更低的order值使其显示在下层
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        usePointStyle: true,
+                        generateLabels: function(chart) {
+                            const datasets = chart.data.datasets;
+                            return datasets.map(function(dataset, i) {
+                                return {
+                                    text: dataset.label,
+                                    fillStyle: dataset.borderColor || dataset.backgroundColor,
+                                    strokeStyle: dataset.borderColor || dataset.backgroundColor,
+                                    lineWidth: 2,
+                                    pointStyle: dataset.type === 'line' ? 'circle' : 'rect',
+                                    hidden: !chart.isDatasetVisible(i),
+                                    index: i
+                                };
+                            });
+                        }
+                    }
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false,
+                }
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: '年份'
+                    }
+                },
+                y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    title: {
+                        display: true,
+                        text: '年降水量 (mm)',
+                        color: precipColor
+                    },
+                    ticks: {
+                        color: precipColor
+                    },
+                    min: 350,
+                    max: 400
+                },
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    title: {
+                        display: true,
+                        text: '湖泊面积 (km²)',
+                        color: areaColor
+                    },
+                    ticks: {
+                        color: areaColor
+                    },
+                    min: 1900,
+                    max: 2500,
+                    grid: {
+                        drawOnChartArea: false
+                    }
+                }
+            },
+            barPercentage: 0.6,
+            categoryPercentage: 0.8
+        }
+    });
+</script>
+</body>
+</html>
